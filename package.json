@@ -1,0 +1,84 @@
+{
+  "name": "omnidock",
+  "version": "0.1.0",
+  "description": "Open-source Cloudflare email dashboard for Workers, Email Routing, Email Sending, D1, R2, support inboxes, Gmail sync, contacts, signatures, logs, and R2 file management.",
+  "homepage": "https://omnidock.org",
+  "license": "MIT",
+  "keywords": [
+    "cloudflare",
+    "cloudflare-workers",
+    "cloudflare-email-routing",
+    "cloudflare-email-sending",
+    "cloudflare-d1",
+    "cloudflare-r2",
+    "workers-ai",
+    "ocr-indexing",
+    "email-dashboard",
+    "support-inbox",
+    "self-hosted-email",
+    "email-routing",
+    "email-sending",
+    "r2-storage",
+    "d1-database",
+    "gmail-sync",
+    "imap",
+    "smtp",
+    "serverless",
+    "react",
+    "typescript"
+  ],
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "dev:worker": "wrangler dev",
+    "build": "node tools/prepare-deploy-config.mjs && node tools/validate-deploy-config.mjs && npm run types && tsc --noEmit && vite build",
+    "check": "npm run types && tsc --noEmit",
+    "test:attachment-limits": "node --experimental-strip-types --test tools/attachment-limits.test.mjs",
+    "test:junk-classifier": "node --experimental-strip-types --test tools/junk-classifier.test.mjs",
+    "deploy": "npm run build && node tools/deploy-preserving-bindings.mjs",
+    "deploy:with-migrations": "npm run build && npm run db:migrate:remote && node tools/deploy-preserving-bindings.mjs",
+    "types": "wrangler types",
+    "db:migrate:local": "wrangler d1 migrations apply DB --local",
+    "db:migrate:remote": "wrangler d1 migrations apply DB --remote"
+  },
+  "cloudflare": {
+    "label": "OmniDock",
+    "products": [
+      "Workers",
+      "D1",
+      "R2",
+      "Workers AI"
+    ],
+    "bindings": {
+      "DB": {
+        "description": "Required D1 database. Keep the generated `database_id` in installed copies so updates reuse the same database."
+      },
+      "MAIL_BUCKET": {
+        "description": "Required R2 bucket for raw messages and attachments. Keep the generated bucket name in installed copies so updates reuse the same bucket."
+      },
+      "AI": {
+        "description": "Workers AI binding used by Index Engine for document-to-markdown and OCR-style text extraction."
+      }
+    }
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "6.1.1",
+    "fflate": "^0.8.3",
+    "lucide-react": "1.47.0",
+    "postal-mime": "4.0.4",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "vite": "8.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.4",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "typescript": "7.0.2",
+    "wrangler": "4.147.0"
+  },
+  "overrides": {
+    "esbuild": "0.28.1"
+  }
+}
